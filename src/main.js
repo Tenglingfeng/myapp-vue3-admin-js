@@ -6,19 +6,12 @@ import store from "./store";
 //and-design-vue
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
-import createI18n from "vue-i18n";
-const i18n = createI18n({
-  local: "en",
-  messages: {
-    ch: require("./languages/ch"),
-    en: require("./languages/en"),
-  },
-});
+import i18n from "./i18n";
 
 // eslint-disable-next-line prettier/prettier
-createApp(App)
-.use(store)
-.use(router)
-.use(Antd)
-.use(i18n)
-.mount("#app");
+createApp(App).use(i18n)
+  .use(i18n)
+  .use(store)
+  .use(router)
+  .use(Antd)
+  .mount("#app");

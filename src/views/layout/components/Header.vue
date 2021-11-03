@@ -9,7 +9,7 @@
         <template #overlay>
           <a-menu @click="onClick">
             <a-menu-item key="1">1st menu item</a-menu-item>
-            <a-menu-item key="2">2nd menu item</a-menu-item>
+            <a-menu-item key="2">{{ $t("hello") }}</a-menu-item>
             <a-menu-item key="3">{{ $t("header_menu.logout") }}</a-menu-item>
           </a-menu>
         </template>
@@ -33,3 +33,11 @@ export default {
   float: right;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "hello": "Hello i18n in SFC!"
+  }
+}
+</i18n>
