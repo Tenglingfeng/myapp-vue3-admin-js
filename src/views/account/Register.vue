@@ -68,14 +68,11 @@ import { message } from "ant-design-vue";
 import { reactive, toRefs } from "vue";
 
 //局部组件
-export default ({
+export default {
   name: "register",
   components: {},
   setup() {
-    async function validateUserName(
-      _rule,
-      value
-    ) {
+    async function validateUserName(_rule, value) {
       if (!checkPhone(value)) {
         return Promise.reject("请输入正确的手机号");
       }
@@ -120,7 +117,6 @@ export default ({
       },
     });
 
-    
     const dataItem = reactive({
       button_text: "获取验证码",
       btn_loading: false,
@@ -164,7 +160,7 @@ export default ({
       handleFinish,
     };
   },
-});
+};
 </script>
 
 <style lang="scss">
