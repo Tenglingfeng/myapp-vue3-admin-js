@@ -33,6 +33,7 @@ const routes = [
     name: "index",
     meta: {
       title: "首页",
+      icon: "home"
     },
     component: () => import("../views/layout/Index.vue"),
   },
@@ -41,6 +42,7 @@ const routes = [
     name: "adminIndex",
     meta: {
       title: "管理总台",
+      icon: "admin"
     },
     component: () => import("../views/layout/Index.vue"),
     children: [
@@ -49,6 +51,7 @@ const routes = [
         name: "role",
         meta: {
           title: "角色",
+          icon: "role"
         },
         component: () => import("../views/admin/Role.vue"),
       },
@@ -57,6 +60,7 @@ const routes = [
         name: "user",
         meta: {
           title: "用户",
+          icon: "user"
         },
         component: () => import("../views/admin/User.vue"),
       },
@@ -66,9 +70,19 @@ const routes = [
     path: "/news",
     name: "News",
     meta: {
-      title: "新闻",
+      title: "信息管理",
+      icon: "news"
     },
-    component: () => import("../views/News.vue"),
+    component: () => import("../views/layout/Index.vue"),
+  },
+  {
+    path: "/product",
+    name: "Product",
+    meta: {
+      title: "产品管理",
+      icon: "product"
+    },
+    component: () => import("../views/layout/Index.vue"),
   },
 ];
 

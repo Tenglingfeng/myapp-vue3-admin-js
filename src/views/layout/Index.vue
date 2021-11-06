@@ -1,6 +1,7 @@
 <template>
   <a-layout style="min-height: 100vh">
-    <a-layout-sider v-model:collapsed="collapsed" collapsible>
+    <a-layout-sider v-model:collapsed="collapsed"
+                    collapsible>
       <LayoutAside></LayoutAside>
     </a-layout-sider>
     <a-layout>
@@ -30,7 +31,7 @@ export default {
     LayoutHeader,
     LayoutMain,
   },
-  setup() {
+  setup () {
     const data = reactive({
       collapsed: false,
       selectedKeys: ["1"],
