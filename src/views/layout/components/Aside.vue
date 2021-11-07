@@ -18,8 +18,8 @@
 
           <template #icon>
             <!-- <PieChartOutlined /> -->
-            <SvgIcon :iconName="item.meta.icon"
-                     className="aside-svg"></SvgIcon>
+            <Svg-Icon :iconName="item.meta.icon"
+                      className="aside-svg"></Svg-Icon>
           </template>
           <router-link :to="item.path">{{item.meta && item.meta.title}} </router-link>
         </a-menu-item>
@@ -28,15 +28,15 @@
                     :key="item.path"
                     :title="item.meta && item.meta.title">
           <template #icon>
-            <SvgIcon :iconName="item.meta.icon"
-                     className="aside-svg"></SvgIcon>
+            <Svg-Icon :iconName="item.meta.icon"
+                      className="aside-svg"></Svg-Icon>
           </template>
           <template v-if="item.children.length">
             <a-menu-item v-for="child in item.children"
                          :key="child.path">
               <template #icon>
-                <SvgIcon :iconName="child.meta.icon"
-                         className="aside-svg"></SvgIcon>
+                <Svg-Icon :iconName="child.meta.icon"
+                          className="aside-svg"></Svg-Icon>
               </template>
               <router-link :to="child.path"> {{child.meta && child.meta.title}} </router-link>
             </a-menu-item>
@@ -50,13 +50,10 @@
 <script>
 import { reactive, toRefs } from "@vue/reactivity";
 import { useRouter } from "vue-router";
-import SvgIcon from "@/components/SvgIcon.vue";
 
 export default {
   name: "aside",
   components: {
-
-    SvgIcon,
   },
   setup () {
     const { options } = useRouter();
@@ -78,7 +75,7 @@ export default {
     const openMenu = (openKeys) => {
       data.openKeys = openKeys;
       localStorage.setItem("openKeys", openKeys)
-      console.log(openKeys)
+      //console.log(openKeys)
     }
     return {
       ...toRefs(data),
