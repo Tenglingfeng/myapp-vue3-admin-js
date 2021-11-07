@@ -1,29 +1,36 @@
 <template>
   <div id="header">
+    <div class="collapsed-button">
+      <Svg-Icon iconName="menu"
+                className="header-svg"></Svg-Icon>
+    </div>
     <div class="header-menu">
       <a-dropdown>
-        <a class="ant-dropdown-link" @click.prevent>
+        <a class="ant-dropdown-link"
+           @click.prevent>
           Hover me, Click menu item
           <DownOutlined />
         </a>
         <template #overlay>
           <a-menu @click="onClick">
-            <a-menu-item class="menu-item" key="1">{{
+            <a-menu-item class="menu-item"
+                         key="1">{{
               $t("header_menu.setting")
             }}</a-menu-item>
-            <a-menu-item class="menu-item" key="2">{{
+            <a-menu-item class="menu-item"
+                         key="2">{{
               $t("header_menu.info")
             }}</a-menu-item>
-            <a-menu-item class="menu-item" key="3">{{
+            <a-menu-item class="menu-item"
+                         key="3">{{
               $t("header_menu.logout")
             }}</a-menu-item>
-            <a-menu-item class="menu-item menu-lang" key="4">
-              <span
-                v-for="lang in data.lang"
-                :key="lang.value"
-                @click="toggleLang(lang.value)"
-                :class="{ current: data.lang_current == lang.value }"
-              >
+            <a-menu-item class="menu-item menu-lang"
+                         key="4">
+              <span v-for="lang in data.lang"
+                    :key="lang.value"
+                    @click="toggleLang(lang.value)"
+                    :class="{ current: data.lang_current == lang.value }">
                 {{ lang.lable }}
               </span>
             </a-menu-item>
@@ -39,7 +46,7 @@ import { reactive } from "@vue/reactivity";
 import { useI18n } from "vue-i18n";
 export default {
   name: "header",
-  setup() {
+  setup () {
     const { locale } = useI18n({ useScope: "global" });
     const data = reactive({
       lang: [
@@ -83,6 +90,11 @@ export default {
   .current {
     color: rgb(41, 165, 165);
   }
+}
+.collapsed-button {
+  float: left;
+  cursor: pointer;
+  font-size: 20px;
 }
 </style>
 
