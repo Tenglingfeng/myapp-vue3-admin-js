@@ -1,12 +1,11 @@
 <template>
   <a-layout style="min-height: 100vh">
-    <a-layout-sider v-model:collapsed="collapsed"
-                    collapsible>
+    <a-layout-sider v-model:collapsed="collapsed" collapsible>
       <LayoutAside></LayoutAside>
     </a-layout-sider>
     <a-layout>
       <a-layout-header style="background: #fff; padding: 0">
-        <LayoutHeader></LayoutHeader>
+        <LayoutHeader @colapsed="handlerCollapsed"></LayoutHeader>
       </a-layout-header>
       <a-layout-content style="margin: 0 16px">
         <LayoutMain></LayoutMain>
@@ -31,14 +30,22 @@ export default {
     LayoutHeader,
     LayoutMain,
   },
-  setup () {
+  setup() {
     const data = reactive({
-      collapsed: false,
+      collapsed: JSON.parse(localStorage.getItem("collapsed")),
       selectedKeys: ["1"],
     });
 
+    const handlerCollapsed = (value) => {
+      console.log(value);
+      const b = !data.collapsed;
+      data.collapsed = b;
+      localStorage.setItem("collapsed", b);
+    };
+
     return {
       ...toRefs(data),
+      handlerCollapsed,
     };
   },
 };

@@ -1,36 +1,36 @@
 <template>
   <div id="header">
     <div class="collapsed-button">
-      <Svg-Icon iconName="menu"
-                className="header-svg"></Svg-Icon>
+      <Svg-Icon
+        iconName="menu"
+        className="header-svg"
+        @click="colapsedButton()"
+      ></Svg-Icon>
     </div>
     <div class="header-menu">
       <a-dropdown>
-        <a class="ant-dropdown-link"
-           @click.prevent>
+        <a class="ant-dropdown-link" @click.prevent>
           Hover me, Click menu item
           <DownOutlined />
         </a>
         <template #overlay>
           <a-menu @click="onClick">
-            <a-menu-item class="menu-item"
-                         key="1">{{
+            <a-menu-item class="menu-item" key="1">{{
               $t("header_menu.setting")
             }}</a-menu-item>
-            <a-menu-item class="menu-item"
-                         key="2">{{
+            <a-menu-item class="menu-item" key="2">{{
               $t("header_menu.info")
             }}</a-menu-item>
-            <a-menu-item class="menu-item"
-                         key="3">{{
+            <a-menu-item class="menu-item" key="3">{{
               $t("header_menu.logout")
             }}</a-menu-item>
-            <a-menu-item class="menu-item menu-lang"
-                         key="4">
-              <span v-for="lang in data.lang"
-                    :key="lang.value"
-                    @click="toggleLang(lang.value)"
-                    :class="{ current: data.lang_current == lang.value }">
+            <a-menu-item class="menu-item menu-lang" key="4">
+              <span
+                v-for="lang in data.lang"
+                :key="lang.value"
+                @click="toggleLang(lang.value)"
+                :class="{ current: data.lang_current == lang.value }"
+              >
                 {{ lang.lable }}
               </span>
             </a-menu-item>
@@ -42,11 +42,12 @@
 </template>
 
 <script>
-import { reactive } from "@vue/reactivity";
+import { reactive, getCurrentInstance } from "vue";
 import { useI18n } from "vue-i18n";
 export default {
   name: "header",
-  setup () {
+  setup() {
+    const { emit } = getCurrentInstance();
     const { locale } = useI18n({ useScope: "global" });
     const data = reactive({
       lang: [
@@ -56,14 +57,21 @@ export default {
       lang_current: "ch",
     });
 
+    //设置语言
     const toggleLang = (value) => {
       locale.value = value;
       data.lang_current = value;
     };
 
+    //
+    const colapsedButton = () => {
+      emit("colapsed");
+    };
+
     return {
       data,
       toggleLang,
+      colapsedButton,
     };
   },
 };

@@ -33,7 +33,7 @@ const routes = [
     name: "index",
     meta: {
       title: "首页",
-      icon: "home"
+      icon: "home",
     },
     component: () => import("../views/layout/Index.vue"),
   },
@@ -42,7 +42,7 @@ const routes = [
     name: "adminIndex",
     meta: {
       title: "管理总台",
-      icon: "admin"
+      icon: "admin",
     },
     component: () => import("../views/layout/Index.vue"),
     children: [
@@ -51,16 +51,36 @@ const routes = [
         name: "role",
         meta: {
           title: "角色",
-          icon: "role"
+          icon: "role",
         },
         component: () => import("../views/admin/Role.vue"),
+        children: [
+          {
+            path: "/roleSub1",
+            name: "roleSub1",
+            meta: {
+              title: "roleSub1",
+              icon: "role",
+            },
+            component: () => import("../views/admin/Role.vue"),
+          },
+          {
+            path: "/roleSub2",
+            name: "roleSub2",
+            meta: {
+              title: "roleSub2",
+              icon: "user",
+            },
+            component: () => import("../views/admin/User.vue"),
+          },
+        ],
       },
       {
         path: "/user",
         name: "user",
         meta: {
           title: "用户",
-          icon: "user"
+          icon: "user",
         },
         component: () => import("../views/admin/User.vue"),
       },
@@ -71,7 +91,7 @@ const routes = [
     name: "News",
     meta: {
       title: "信息管理",
-      icon: "news"
+      icon: "news",
     },
     component: () => import("../views/layout/Index.vue"),
   },
@@ -80,7 +100,7 @@ const routes = [
     name: "Product",
     meta: {
       title: "产品管理",
-      icon: "product"
+      icon: "product",
     },
     component: () => import("../views/layout/Index.vue"),
   },
