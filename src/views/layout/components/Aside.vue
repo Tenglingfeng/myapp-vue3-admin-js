@@ -5,7 +5,6 @@
   <a-menu
     mode="inline"
     theme="dark"
-    :inline-collapsed="collapsed"
     v-model:openKeys="openKeys"
     v-model:selectedKeys="selectedKeys"
     @click="selectMenu"
@@ -13,7 +12,7 @@
   >
     <template v-for="item in routes" :key="item">
       <template v-if="!item.hidden">
-        <a-menu-item :key="item.path" v-if="!item.children">
+        <a-menu-item :key="item.path" v-if="hasOnlyOne(item)">
           <template #icon>
             <!-- <PieChartOutlined /> -->
             <Svg-Icon
@@ -21,8 +20,8 @@
               className="aside-svg"
             ></Svg-Icon>
           </template>
-          <router-link :to="item.path"
-            >{{ item.meta && item.meta.title }}
+          <router-link :to="item.children[0].path"
+            >{{ item.children[0].meta && item.children[0].meta.title }}
           </router-link>
         </a-menu-item>
         <Menu :menu="item" v-else></Menu>
@@ -42,7 +41,6 @@ export default {
   setup() {
     const { options } = useRouter();
     const routes = options.routes;
-    console.log(routes);
     const data = reactive({
       selectedKeys: localStorage.getItem("selectedKeys")
         ? [localStorage.getItem("selectedKeys")]
@@ -62,11 +60,29 @@ export default {
       data.openKeys = openKeys;
       localStorage.setItem("openKeys", JSON.stringify(openKeys));
     };
+
+    const hasOnlyOne = (child) => {
+      console.log(child, { child });
+      if (!child.children || child.children.length === 0) {
+        return false;
+      }
+      const childrenRouters = child.children.filter((item) => {
+        return item.hidden ? false : true;
+      });
+
+      console.log(childrenRouters);
+      if (childrenRouters.length === 1) {
+        return true;
+      } else {
+        return false;
+      }
+    };
     return {
       ...toRefs(data),
       routes,
       selectMenu,
       openMenu,
+      hasOnlyOne,
     };
   },
 };
