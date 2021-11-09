@@ -1,28 +1,23 @@
 <template>
   <svg class="svg-class">
-    <use :href="'#'+iconName"
-         :class="className"></use>
+    <use :href="'#' + iconName" :class="className"></use>
   </svg>
 </template>
 <script>
-
 export default {
   name: "SvgIcon",
   props: {
     iconName: {
       type: String,
-      default: ""
+      default: "",
     },
     className: {
       type: String,
-      default: ""
-    }
+      default: "",
+    },
   },
-  setup () {
-
-  }
+  setup() {},
 };
 </script>
 
-<style lang="scss" scoped>
-</style> 
+<style lang="scss" scoped></style>

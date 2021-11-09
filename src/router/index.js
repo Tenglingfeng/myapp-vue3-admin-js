@@ -63,6 +63,26 @@ const routes = [
               icon: "role",
             },
             component: () => import("../views/admin/Role.vue"),
+            children: [
+              {
+                path: "/roleSubSub1",
+                name: "roleSubSub1",
+                meta: {
+                  title: "roleSubSub1",
+                  icon: "role",
+                },
+                component: () => import("../views/admin/Role.vue"),
+              },
+              {
+                path: "/roleSubSub2",
+                name: "roleSubSub2",
+                meta: {
+                  title: "roleSubSub2",
+                  icon: "user",
+                },
+                component: () => import("../views/admin/User.vue"),
+              },
+            ],
           },
           {
             path: "/roleSub2",

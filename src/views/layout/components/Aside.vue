@@ -25,32 +25,7 @@
             >{{ item.meta && item.meta.title }}
           </router-link>
         </a-menu-item>
-
-        <a-sub-menu
-          v-else
-          :key="item.path"
-          :title="item.meta && item.meta.title"
-        >
-          <template #icon>
-            <Svg-Icon
-              :iconName="item.meta.icon"
-              className="aside-svg"
-            ></Svg-Icon>
-          </template>
-          <template v-if="item.children.length">
-            <a-menu-item v-for="child in item.children" :key="child.path">
-              <template #icon>
-                <Svg-Icon
-                  :iconName="child.meta.icon"
-                  className="aside-svg"
-                ></Svg-Icon>
-              </template>
-              <router-link :to="child.path">
-                {{ child.meta && child.meta.title }}
-              </router-link>
-            </a-menu-item>
-          </template>
-        </a-sub-menu>
+        <Menu :menu="item" v-else></Menu>
       </template>
     </template>
   </a-menu>
@@ -59,10 +34,11 @@
 <script>
 import { reactive, toRefs } from "@vue/reactivity";
 import { useRouter } from "vue-router";
+import Menu from "./Menu";
 
 export default {
   name: "aside",
-  components: {},
+  components: { Menu },
   setup() {
     const { options } = useRouter();
     const routes = options.routes;
