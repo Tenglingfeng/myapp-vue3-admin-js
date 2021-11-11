@@ -12,6 +12,7 @@
 
         <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
           <a-button type="primary" html-type="submit" block>登录</a-button>
+          <a-button type="primary" @click="submit()" block>测试axios</a-button>
         </a-form-item>
       </a-form>
       <div class="text-center fs-12">
@@ -23,8 +24,8 @@
 </template>
 
 <script>
-import { reactive } from "@vue/reactivity";
-import { onMounted } from "@vue/runtime-core";
+import { reactive } from "vue";
+import { GetCode } from "@/api/account.js";
 export default {
   name: "Login",
   setup() {
@@ -39,10 +40,14 @@ export default {
       },
     });
 
-    // 生命周期结束
-    onMounted(() => {});
+    const submit = () => {
+      GetCode({});
+    };
 
-    return { formConfig };
+    return {
+      formConfig,
+      submit,
+    };
   },
 };
 </script>

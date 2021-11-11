@@ -13,11 +13,17 @@ import SvgIcon from "@/components/SvgIcon.vue";
 //svg 文件解析
 import "./js/svg";
 
+import axios from "axios";
+//import VueAxios from "vue-axios";
+
 // eslint-disable-next-line prettier/prettier
-createApp(App).use(i18n)
+const app = createApp(App);
+app.config.globalProperties.$axios = axios;
+app
   .use(i18n)
   .use(store)
   .use(router)
   .use(Antd)
+  //.use(VueAxios, axios)
   .component("Svg-Icon", SvgIcon)
   .mount("#app");
