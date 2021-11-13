@@ -1,9 +1,11 @@
 import axios from "axios";
 // Set config defaults when creating the instance
 const service = axios.create({
-  baseURL: "/devapi",
+  baseURL: process.env.VUE_APP_API,
   timeout: 5000,
 });
+
+console.log(process.env.VUE_APP_API);
 
 // Alter defaults after instance has been created
 service.defaults.headers.common["Authorization"] = "AUTH_TOKEN";
@@ -25,7 +27,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   function (response) {
     // 对响应数据做点什么
-    console.log("respo,nse", response.data);
+    console.log("response", response.data);
     return response;
   },
   function (error) {

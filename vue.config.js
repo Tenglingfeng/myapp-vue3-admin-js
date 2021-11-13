@@ -43,12 +43,11 @@ module.exports = {
       fullInstall: true
     }
   }
-  ,devServer: {
+  ,  devServer: {
     proxy: {
       '/devapi': {
-        target: 'http://localhost:44370/api',
+        target: 'http://localhost:44370',
         pathRewrite: { '^/devapi': '' },
-        changeOrigin: true
       },
     },
   },

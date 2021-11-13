@@ -41,7 +41,7 @@ export default {
     });
 
     const submit = () => {
-      GetCode({});
+      GetCode("123456");
     };
 
     return {
