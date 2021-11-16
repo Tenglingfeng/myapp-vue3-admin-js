@@ -1,11 +1,10 @@
 import axios from "axios";
+import { message } from "ant-design-vue";
 // Set config defaults when creating the instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_API,
   timeout: 5000,
 });
-
-console.log(process.env.VUE_APP_API);
 
 // Alter defaults after instance has been created
 service.defaults.headers.common["Authorization"] = "AUTH_TOKEN";
@@ -27,11 +26,29 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   function (response) {
     // 对响应数据做点什么
-    console.log("response", response.data);
-    return response;
+    //console.log("response", response.data);
+    const data = response.data;
+    return data;
   },
-  function (error) {
-    // 对响应错误做点什么
+  (error) => {
+    const data = error.request;
+    const response = JSON.parse(data.response);
+    //业务错误
+    if (data.status == "403") {
+      message.error(response.error.message);
+    }
+
+    //验证错误
+    else if (data.status == "400") {
+      response.error.validationErrors.forEach((element) => {
+        message.error(element.message);
+      });
+    }
+
+    //服务器错误
+    else if (data.status == "500") {
+      message.error("系统错误");
+    }
     return Promise.reject(error);
   }
 );

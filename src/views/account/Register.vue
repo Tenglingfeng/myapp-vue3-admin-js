@@ -14,6 +14,7 @@
             type="text"
             autocomplete="off"
             v-model:value="account_form.username"
+            :disabled="account_disabled.username"
           />
         </a-form-item>
         <a-form-item has-feedback label="密码" name="password">
@@ -47,7 +48,7 @@
                 block
                 @click="getCode"
                 :loading="btn_loading"
-                :disabled="btn_disabled"
+                :disabled="code_btn_disabled"
               >
                 {{ button_text }}
               </a-button>
@@ -63,9 +64,11 @@
 </template>
 
 <script>
-import { checkPhone } from "@/utils/validation";
-import { message } from "ant-design-vue";
+``;
+//import { checkPhone } from "@/utils/validation";
 import { reactive, toRefs } from "vue";
+import { checkUserNameExist } from "@/api/account";
+import { message } from "ant-design-vue";
 
 //局部组件
 export default {
@@ -73,9 +76,11 @@ export default {
   components: {},
   setup() {
     async function validateUserName(_rule, value) {
-      if (!checkPhone(value)) {
-        return Promise.reject("请输入正确的手机号");
+      if (!value) {
+        dataItem.code_btn_disabled = true;
+        return Promise.reject("请输入正确的用户名");
       }
+      dataItem.code_btn_disabled = false;
       return Promise.resolve();
     }
 
@@ -93,6 +98,9 @@ export default {
         password: "",
         password2: "",
         code: "",
+      },
+      account_disabled: {
+        username: false,
       },
       rules_form: {
         username: [
@@ -117,10 +125,21 @@ export default {
       },
     });
 
+    const checkUserNameExsit = (value) => {
+      formConfig.account_disabled.username = true;
+      return checkUserNameExist(value)
+        .then((response) => {
+          formConfig.account_disabled.username = false;
+          return response.data;
+        })
+        .catch(() => {
+          formConfig.account_disabled.username = false;
+        });
+    };
     const dataItem = reactive({
       button_text: "获取验证码",
       btn_loading: false,
-      btn_disabled: false,
+      code_btn_disabled: false,
       sec: 10,
       //定时器
       timer: 0,
@@ -132,25 +151,28 @@ export default {
       console.log(value);
     };
     //获取验证码
-    function getCode() {
+    async function getCode() {
       //用户名不存在的情况
-      if (!formConfig.account_form.username) {
-        message.warning({
-          content: "用户名不能为空",
-        });
-      }
-
-      //先判断定时器是否存在, 存在则先清除
-      dataItem.timer && clearInterval(dataItem.timer);
-      dataItem.timer = setInterval(() => {
-        let s = dataItem.sec--;
-        console.log(s);
-        dataItem.button_text = `${s}秒`;
-        if (s <= 0) {
-          clearInterval(dataItem.timer);
-          dataItem.button_text = "重新获取";
+      let b = await checkUserNameExsit(formConfig.account_form.username);
+      if (b) {
+        message.info("用户名已存在");
+      } else {
+        //先判断定时器是否存在, 存在则先清除
+        if (dataItem.timer) {
+          console.log("start timer");
+          window.clearInterval(dataItem.timer);
         }
-      }, 1000);
+        dataItem.timer = await setInterval(() => {
+          dataItem.code_btn_disabled = true;
+          let s = dataItem.sec--;
+          dataItem.button_text = `${s}秒`;
+          if (s <= 0) {
+            window.clearInterval(dataItem.timer);
+            dataItem.button_text = "重新获取";
+            dataItem.code_btn_disabled = false;
+          }
+        }, 1000);
+      }
     }
 
     return {

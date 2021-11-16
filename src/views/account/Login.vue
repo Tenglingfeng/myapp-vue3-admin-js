@@ -1,17 +1,36 @@
 <template>
   <div class="account">
     <div class="form-wrap">
-      <a-form name="custom-validation" ref="formRef" v-bind="formConfig.layout">
-        <a-form-item has-feedback label="用户名" name="pass">
-          <a-input type="text" autocomplete="off" />
+      <a-form
+        ref="formRef"
+        v-bind="formConfig.layout"
+        :rules="rules"
+        :model="modelRef"
+      >
+        <a-form-item label="用户名" name="username" ref="username">
+          <a-input
+            type="text"
+            v-model:value="modelRef.username"
+            @change="
+              () => {
+                $refs.username.onFieldChange();
+              }
+            "
+          />
         </a-form-item>
 
-        <a-form-item has-feedback label="密码" name="pass">
-          <a-input type="password" autocomplete="off" />
+        <a-form-item label="密码" name="password">
+          <a-input type="password" v-model:value="modelRef.password" />
+        </a-form-item>
+
+        <a-form-item label="验证码" name="code">
+          <a-input type="text" v-model:value="modelRef.code" />
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-          <a-button type="primary" html-type="submit" block>登录</a-button>
+          <a-button type="primary" html-type="submit" block @click="onSubmit()"
+            >登录</a-button
+          >
           <a-button type="primary" @click="submit()" block>测试axios</a-button>
         </a-form-item>
       </a-form>
@@ -24,11 +43,13 @@
 </template>
 
 <script>
-import { reactive } from "vue";
-import { GetCode } from "@/api/account.js";
+import { reactive, ref } from "vue";
+import { Login } from "@/api/account.js";
 export default {
   name: "Login",
   setup() {
+    const formRef = ref();
+
     const formConfig = reactive({
       layout: {
         labelCol: {
@@ -39,14 +60,64 @@ export default {
         },
       },
     });
+    const modelRef = reactive({
+      password: "",
+      username: "",
+      code: "",
+    });
+
+    let checkAge = async (rule, value) => {
+      if (!value) {
+        return Promise.reject("Please input the age");
+      }
+
+      if (!Number.isInteger(value)) {
+        return Promise.reject("Please input digits");
+      } else {
+        if (value < 18) {
+          return Promise.reject("Age must be greater than 18");
+        } else {
+          return Promise.resolve();
+        }
+      }
+    };
+    const rules = {
+      username: [
+        {
+          required: true,
+          message: "Please input Activity name",
+          trigger: "blur",
+          validate: checkAge,
+        },
+      ],
+      password: [
+        {
+          required: true,
+          message: "Please input Activity name",
+          trigger: "blur",
+        },
+      ],
+    };
+
+    const onSubmit = () => {
+      Login({ username: modelRef.username, password: modelRef.password }).then(
+        (response) => {
+          console.log(response);
+        }
+      );
+    };
 
     const submit = () => {
-      GetCode("123456");
+      console.log(formRef.value);
     };
 
     return {
+      ref,
       formConfig,
+      modelRef,
       submit,
+      onSubmit,
+      rules,
     };
   },
 };
