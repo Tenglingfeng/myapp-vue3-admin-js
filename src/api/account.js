@@ -1,7 +1,7 @@
 import service from "@/utils/request.js";
 
 //定义方法
-export function GetCode(params) {
+export function GetValidateCode(params) {
   return service.request({
     // `url` 是用于请求的服务器 URL
     url: "app-user/code/" + params,
@@ -13,7 +13,7 @@ export function GetCode(params) {
 }
 
 //检查用户是否存在
-export function checkUserNameExist(params) {
+export function UserNameExist(params) {
   return service.request({
     // `url` 是用于请求的服务器 URL
     url: "app-user/check-username/" + params + "/exist",
@@ -30,5 +30,17 @@ export function Login(data) {
     url: "app-user/login",
     method: "post",
     data: data,
+  });
+}
+/**
+ * 注册接口
+ * @param {注册信息} data
+ * @returns
+ */
+export function Register(data) {
+  return service.request({
+    url: "account/register",
+    method: "post",
+    data,
   });
 }
