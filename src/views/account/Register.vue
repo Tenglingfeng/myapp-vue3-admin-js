@@ -103,6 +103,7 @@ import { reactive, toRefs } from "vue";
 import { UserNameExist, GetValidateCode, Register } from "@/api/account";
 import { message } from "ant-design-vue";
 import { useRouter } from "vue-router";
+import md5 from "js-md5";
 //局部组件
 export default {
   name: "register",
@@ -207,7 +208,7 @@ export default {
     const handleFinish = (value) => {
       Register({
         username: value.username,
-        password: value.password,
+        password: md5(value.password),
         emailAddress: value.emailAddress,
         appname: value.appname,
       })

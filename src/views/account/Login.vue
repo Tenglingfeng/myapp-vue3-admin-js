@@ -23,15 +23,10 @@
           <a-input type="password" v-model:value="modelRef.password" />
         </a-form-item>
 
-        <a-form-item label="验证码" name="code">
-          <a-input type="text" v-model:value="modelRef.code" />
-        </a-form-item>
-
         <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
           <a-button type="primary" html-type="submit" block @click="onSubmit()"
             >登录</a-button
           >
-          <a-button type="primary" @click="submit()" block>测试axios</a-button>
         </a-form-item>
       </a-form>
       <div class="text-center fs-12">
@@ -45,11 +40,15 @@
 <script>
 import { reactive, ref } from "vue";
 import { Login } from "@/api/account.js";
+import {
+  SetAccessToken,
+  GetAccessToken,
+  RemoveAccessToken,
+} from "@/utils/cookies.js";
+
 export default {
   name: "Login",
   setup() {
-    const formRef = ref();
-
     const formConfig = reactive({
       layout: {
         labelCol: {
@@ -65,35 +64,16 @@ export default {
       username: "",
       code: "",
     });
-
-    let checkAge = async (rule, value) => {
-      if (!value) {
-        return Promise.reject("Please input the age");
-      }
-
-      if (!Number.isInteger(value)) {
-        return Promise.reject("Please input digits");
-      } else {
-        if (value < 18) {
-          return Promise.reject("Age must be greater than 18");
-        } else {
-          return Promise.resolve();
-        }
-      }
-    };
     const rules = {
       username: [
         {
           required: true,
-          message: "Please input Activity name",
           trigger: "blur",
-          validate: checkAge,
         },
       ],
       password: [
         {
           required: true,
-          message: "Please input Activity name",
           trigger: "blur",
         },
       ],
@@ -102,20 +82,20 @@ export default {
     const onSubmit = () => {
       Login({ username: modelRef.username, password: modelRef.password }).then(
         (response) => {
-          console.log(response);
+          SetAccessToken({ token: response.data.accessToken });
+          console.log(GetAccessToken());
+          RemoveAccessToken();
+          console.log(GetAccessToken());
+          sessionStorage.setItem("abc", response.data.accessToken);
+          localStorage.setItem("abc", response.data.accessToken);
         }
       );
-    };
-
-    const submit = () => {
-      console.log(formRef.value);
     };
 
     return {
       ref,
       formConfig,
       modelRef,
-      submit,
       onSubmit,
       rules,
     };
