@@ -1,19 +1,154 @@
-<!-- 用户 -->
+/**用户 */
 <template>
-  <div>用户</div>
+  <a-table
+    :columns="columns"
+    :data-source="data"
+    :row-selection="{
+      selectedRowKeys: selectedRowKeys,
+      onChange: onSelectChange,
+    }"
+  >
+    <template #name="{ text }">
+      <a>{{ text }}</a>
+    </template>
+    <template #customTitle>
+      <span>
+        <smile-outlined />
+        Name
+      </span>
+    </template>
+    <template #tags="{ text: tags }">
+      <span>
+        <a-tag
+          v-for="tag in tags"
+          :key="tag"
+          :color="
+            tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'
+          "
+        >
+          {{ tag.toUpperCase() }}
+        </a-tag>
+      </span>
+    </template>
+    <template #action="{ record }">
+      <span>
+        <a>Invite 一 {{ record.name }}</a>
+        <a-divider type="vertical" />
+        <a>Delete</a>
+        <a-divider type="vertical" />
+        <a class="ant-dropdown-link">
+          More actions
+          <down-outlined />
+        </a>
+      </span>
+    </template>
+  </a-table>
 </template>
-
 <script>
-export default {
-  data() {
-    return {};
+import { SmileOutlined, DownOutlined } from "@ant-design/icons-vue";
+import { defineComponent, reactive, computed } from "vue";
+
+export default defineComponent({
+  setup() {
+    const columns = reactive([
+      {
+        dataIndex: "username",
+        key: "username",
+        title: "用户名",
+        slots: {
+          customRender: "username",
+        },
+      },
+      {
+        dataIndex: "name",
+        key: "name",
+        slots: {
+          title: "customTitle",
+          customRender: "name",
+        },
+      },
+      {
+        title: "Age",
+        dataIndex: "age",
+        key: "age",
+      },
+      {
+        title: "Address",
+        dataIndex: "address",
+        key: "address",
+      },
+      {
+        title: "Tags",
+        key: "tags",
+        dataIndex: "tags",
+        slots: {
+          customRender: "tags",
+        },
+      },
+      {
+        title: "Action",
+        key: "action",
+        slots: {
+          customRender: "action",
+        },
+      },
+    ]);
+    const data = reactive([
+      {
+        key: "1",
+        name: "John Brown",
+        age: 32,
+        address: "New York No. 1 Lake Park",
+        tags: ["nice", "developer"],
+      },
+      {
+        key: "2",
+        name: "Jim Green",
+        age: 42,
+        address: "London No. 1 Lake Park",
+        tags: ["loser"],
+      },
+      {
+        key: "3",
+        name: "Joe Black",
+        age: 32,
+        address: "Sidney No. 1 Lake Park",
+        tags: ["cool", "teacher"],
+      },
+    ]);
+    const state = reactive({
+      selectedRowKeys: [],
+      // Check here to configure the default column
+      loading: false,
+    });
+
+    const start = () => {
+      state.loading = true; // ajax request after empty completing
+
+      setTimeout(() => {
+        state.loading = false;
+        state.selectedRowKeys = [];
+      }, 1000);
+    };
+
+    const hasSelected = computed(() => state.selectedRowKeys.length > 0);
+
+    const onSelectChange = (selectedRowKeys) => {
+      console.log("selectedRowKeys changed: ", selectedRowKeys);
+      state.selectedRowKeys = selectedRowKeys;
+    };
+    return {
+      data,
+      columns,
+      onSelectChange,
+      hasSelected,
+      start,
+    };
   },
-  //生命周期 - 创建完成（访问当前this实例）
-  created() {},
-  //生命周期 - 挂载完成（访问DOM元素）
-  mounted() {},
-};
+
+  components: {
+    SmileOutlined,
+    DownOutlined,
+  },
+});
 </script>
-<style scoped>
-/* @import url(); 引入css类 */
-</style>

@@ -40,6 +40,7 @@
 <script>
 import { reactive, ref } from "vue";
 import { Login } from "@/api/account.js";
+import { useRouter } from "vue-router";
 import {
   SetAccessToken,
   // GetAccessToken,
@@ -49,6 +50,7 @@ import {
 export default {
   name: "Login",
   setup() {
+    const { push } = useRouter();
     const formConfig = reactive({
       layout: {
         labelCol: {
@@ -83,11 +85,9 @@ export default {
       Login({ username: modelRef.username, password: modelRef.password }).then(
         (response) => {
           SetAccessToken({ token: response.data.accessToken });
-          //console.log(GetAccessToken());
-          //RemoveAccessToken();
-          //console.log(GetAccessToken());
-          //sessionStorage.setItem("abc", response.data.accessToken);
-          //localStorage.setItem("abc", response.data.accessToken);
+          push({
+            name: "index",
+          });
         }
       );
     };

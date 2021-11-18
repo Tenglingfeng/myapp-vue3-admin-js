@@ -78,6 +78,15 @@ const routes = [
         },
         component: () => import("../views/admin/User.vue"),
       },
+      {
+        path: "/menu",
+        name: "menu",
+        meta: {
+          title: "菜单",
+          icon: "menu",
+        },
+        component: () => import("../views/admin/User.vue"),
+      },
     ],
   },
   {
