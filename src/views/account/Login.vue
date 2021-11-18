@@ -42,8 +42,8 @@ import { reactive, ref } from "vue";
 import { Login } from "@/api/account.js";
 import {
   SetAccessToken,
-  GetAccessToken,
-  RemoveAccessToken,
+  // GetAccessToken,
+  // RemoveAccessToken,
 } from "@/utils/cookies.js";
 
 export default {
@@ -83,11 +83,11 @@ export default {
       Login({ username: modelRef.username, password: modelRef.password }).then(
         (response) => {
           SetAccessToken({ token: response.data.accessToken });
-          console.log(GetAccessToken());
-          RemoveAccessToken();
-          console.log(GetAccessToken());
-          sessionStorage.setItem("abc", response.data.accessToken);
-          localStorage.setItem("abc", response.data.accessToken);
+          //console.log(GetAccessToken());
+          //RemoveAccessToken();
+          //console.log(GetAccessToken());
+          //sessionStorage.setItem("abc", response.data.accessToken);
+          //localStorage.setItem("abc", response.data.accessToken);
         }
       );
     };

@@ -14,6 +14,8 @@ import SvgIcon from "@/components/SvgIcon.vue";
 import "./js/svg";
 
 import axios from "axios";
+
+import "./router/permission";
 //import VueAxios from "vue-axios";
 
 // eslint-disable-next-line prettier/prettier
