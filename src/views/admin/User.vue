@@ -3,12 +3,10 @@
     <div class="table-operations">
       <a-row type="flex">
         <a-col flex="auto">
-          <a-form
-            layout="inline"
-            :model="formState"
-            :label-col="labelCol"
-            :wrapper-col="wrapperCol"
-          >
+          <a-form layout="inline"
+                  :model="formState"
+                  :label-col="labelCol"
+                  :wrapper-col="wrapperCol">
             <a-form-item label="机构">
               <a-input v-model:value="formState.resource" />
             </a-form-item>
@@ -17,14 +15,12 @@
               <a-input v-model:value="formState.name" />
             </a-form-item>
             <a-form-item label="启用状态">
-              <a-select
-                ref="select"
-                v-model:value="value1"
-                style="width: 120px"
-                @focus="focus"
-                @change="handleChange"
-                dropdownMatchSelectWidth="true"
-              >
+              <a-select ref="select"
+                        v-model:value="value1"
+                        style="width: 120px"
+                        @focus="focus"
+                        @change="handleChange"
+                        dropdownMatchSelectWidth="true">
                 <a-select-option value="jack">Jack</a-select-option>
                 <a-select-option value="lucy">Lucy</a-select-option>
                 <a-select-option value="Yiminghe">yiminghe</a-select-option>
@@ -39,32 +35,29 @@
           </a-form>
         </a-col>
         <a-col flex="100px">
-          <a-button type="primary" @click="visible = true">新增用户</a-button>
+          <a-button type="primary"
+                    @click="dataProp.visible = true">新增用户</a-button>
         </a-col>
       </a-row>
     </div>
-    <a-table
-      :row-selection="{
+    <a-table :row-selection="{
         selectedRowKeys: selectedRowKeys,
         onChange: onSelectChange,
       }"
-      :columns="columns"
-      :data-source="data"
-      class="mt_28"
-    >
+             :columns="columns"
+             :data-source="data"
+             class="mt_28">
       <template #tags="{ text: tags }">
         <span>
-          <a-tag
-            v-for="tag in tags"
-            :key="tag"
-            :color="
+          <a-tag v-for="tag in tags"
+                 :key="tag"
+                 :color="
               tag === 'loser'
                 ? 'volcano'
                 : tag.length > 5
                 ? 'geekblue'
                 : 'green'
-            "
-          >
+            ">
             {{ tag.toUpperCase() }}
           </a-tag>
         </span>
@@ -81,7 +74,8 @@
         </span>
       </template>
     </a-table>
-    <ModalUser :show="visible" />
+    <ModalUser v-model:show="dataProp.visible"
+               title="新增用户" />
   </div>
 </template>
 <script>
@@ -143,7 +137,7 @@ for (let i = 0; i < 46; i++) {
 
 export default defineComponent({
   components: { ModalUser },
-  setup() {
+  setup () {
     const state = reactive({
       selectedRowKeys: [],
       // Check here to configure the default column
@@ -182,10 +176,12 @@ export default defineComponent({
       type: [],
       resource: "",
       desc: "",
+
     });
 
-    const visible = ref(false);
-
+    const dataProp = reactive({
+      visible: false
+    })
     return {
       data,
       columns,
@@ -199,7 +195,7 @@ export default defineComponent({
       checked,
       from,
       formState,
-      visible,
+      dataProp
     };
   },
 });

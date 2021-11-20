@@ -1,11 +1,9 @@
 <!-- 用户 -->
 <template>
-  <a-modal
-    v-model:visible="visible"
-    title="新增用户"
-    @ok="handleOk"
-    @cancel="close"
-  >
+  <a-modal v-model:visible="visible"
+           :title="title"
+           @ok="handleOk"
+           @cancel="close">
   </a-modal>
 </template>
 
@@ -17,29 +15,31 @@ export default {
       type: Boolean,
       default: false,
     },
+    title: {
+      type: String,
+      default: ""
+    }
   },
   emits: ["update:show"],
-  setup(props, context) {
-    const visible = ref(false);
-    console.log(props.show);
+  setup (props, context) {
     watch(
-      () => props.show,
-      (newVaule, oldValue) => {
-        console.log(newVaule);
-        console.log(oldValue);
+      () => {
+        return props.show;
+      },
+      (newVaule, oldvue) => {
         visible.value = newVaule;
       }
     );
     const handleOk = (e) => {
-      console.log(e);
-      visible.value = false;
+      context.emit("update:show", false);
     };
 
     const close = () => {
-      console.log("11");
       context.emit("update:show", false);
-      console.log("2");
-    };
+    }
+
+    const visible = ref(false);
+
     return {
       handleOk,
       visible,
