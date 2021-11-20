@@ -10,23 +10,18 @@
             <a-form-item label="机构">
               <a-input v-model:value="formState.resource" />
             </a-form-item>
-
             <a-form-item label="关键字">
               <a-input v-model:value="formState.name" />
             </a-form-item>
             <a-form-item label="启用状态">
               <a-select ref="select"
-                        v-model:value="value1"
                         style="width: 120px"
-                        @focus="focus"
-                        @change="handleChange"
-                        dropdownMatchSelectWidth="true">
+                        :dropdownMatchSelectWidth="true">
                 <a-select-option value="jack">Jack</a-select-option>
                 <a-select-option value="lucy">Lucy</a-select-option>
                 <a-select-option value="Yiminghe">yiminghe</a-select-option>
               </a-select>
             </a-form-item>
-
             <a-form-item class="ml_10 mr_10 form_btn">
               <a-button type="primary">搜索</a-button>
               <a-button type="primary">重置</a-button>
@@ -65,17 +60,20 @@
       <template #enables="{}">
         <a-switch v-model:checked="checked" />
       </template>
-      <template #action="">
+      <template #action="{record}">
         <span>
-          <a>详情</a>
+          <a @click="query(record.key)">详情</a>
           <a-divider type="vertical" />
-          <a>删除</a>
+          <a @click="edit(record.key)">编辑</a>
+          <a-divider type="vertical" />
+          <a @click="remove(record.key)">删除</a>
           <a-divider type="vertical" />
         </span>
       </template>
     </a-table>
     <ModalUser v-model:show="dataProp.visible"
-               title="新增用户" />
+               v-model:rowId="dataProp.rowId"
+               v-model:title="dataProp.title" />
   </div>
 </template>
 <script>
@@ -160,7 +158,7 @@ export default defineComponent({
     };
     const checked = ref(false);
 
-    const from = reactive({
+    const formform = reactive({
       labelCol: {
         span: 4,
       },
@@ -180,22 +178,42 @@ export default defineComponent({
     });
 
     const dataProp = reactive({
-      visible: false
+      visible: false,
+      rowId: "",
+      title: "新增用户"
     })
+
+    const edit = (value) => {
+      dataProp.rowId = value;
+      dataProp.title = "编辑用户";
+      dataProp.visible = true;
+    }
+
+    const query = (value) => {
+      console.log(value)
+    }
+
+
+    const remove = (value) => {
+      console.log(value)
+    }
+
     return {
       data,
       columns,
       hasSelected,
       ...toRefs(state),
-      // func
       start,
       onSelectChange,
       SmileOutlined,
       DownOutlined,
       checked,
-      from,
+      formform,
       formState,
-      dataProp
+      dataProp,
+      edit,
+      query,
+      remove
     };
   },
 });

@@ -1,13 +1,18 @@
 import axios from "axios";
 import { message } from "ant-design-vue";
+
+import { GetAccessToken } from "./cookies";
+
 // Set config defaults when creating the instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_API,
   timeout: 5000,
 });
 
+var token = GetAccessToken();
+
 // Alter defaults after instance has been created
-service.defaults.headers.common["Authorization"] = "AUTH_TOKEN";
+service.defaults.headers.common["Authorization"] = "Bearer " + token + "";
 
 // 添加请求拦截器
 service.interceptors.request.use(
