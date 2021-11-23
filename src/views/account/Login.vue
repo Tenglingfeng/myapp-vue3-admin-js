@@ -41,6 +41,8 @@
 import { reactive, ref } from "vue";
 import { Login } from "@/api/account.js";
 import { useRouter } from "vue-router";
+import md5 from "js-md5";
+
 import {
   SetAccessToken,
   // GetAccessToken,
@@ -82,14 +84,15 @@ export default {
     };
 
     const onSubmit = () => {
-      Login({ username: modelRef.username, password: modelRef.password }).then(
-        (response) => {
-          SetAccessToken({ token: response.data.accessToken });
-          push({
-            name: "index",
-          });
-        }
-      );
+      Login({
+        username: modelRef.username,
+        password: md5(modelRef.password),
+      }).then((response) => {
+        SetAccessToken({ token: response.data.accessToken });
+        push({
+          name: "index",
+        });
+      });
     };
 
     return {

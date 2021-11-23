@@ -10,7 +10,7 @@ const service = axios.create({
 });
 
 var token = GetAccessToken();
-
+console.log(token);
 // Alter defaults after instance has been created
 service.defaults.headers.common["Authorization"] = "Bearer " + token + "";
 

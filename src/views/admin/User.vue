@@ -3,10 +3,12 @@
     <div class="table-operations">
       <a-row type="flex">
         <a-col flex="auto">
-          <a-form layout="inline"
-                  :model="formState"
-                  :label-col="labelCol"
-                  :wrapper-col="wrapperCol">
+          <a-form
+            layout="inline"
+            :model="formState"
+            :label-col="labelCol"
+            :wrapper-col="wrapperCol"
+          >
             <a-form-item label="机构">
               <a-input v-model:value="formState.resource" />
             </a-form-item>
@@ -14,9 +16,11 @@
               <a-input v-model:value="formState.name" />
             </a-form-item>
             <a-form-item label="启用状态">
-              <a-select ref="select"
-                        style="width: 120px"
-                        :dropdownMatchSelectWidth="true">
+              <a-select
+                ref="select"
+                style="width: 120px"
+                :dropdownMatchSelectWidth="true"
+              >
                 <a-select-option value="jack">Jack</a-select-option>
                 <a-select-option value="lucy">Lucy</a-select-option>
                 <a-select-option value="Yiminghe">yiminghe</a-select-option>
@@ -30,29 +34,37 @@
           </a-form>
         </a-col>
         <a-col flex="100px">
-          <a-button type="primary"
-                    @click="dataProp.visible = true">新增用户</a-button>
+          <a-button type="primary" @click="dataProp.visible = true"
+            >新增用户</a-button
+          >
         </a-col>
       </a-row>
     </div>
-    <a-table :row-selection="{
+    <a-table
+      :row-selection="{
         selectedRowKeys: selectedRowKeys,
         onChange: onSelectChange,
       }"
-             :columns="columns"
-             :data-source="data"
-             class="mt_28">
+      :columns="columns"
+      :data-source="dataSource"
+      class="mt_28"
+      :pagination="pagination"
+      :loading="loading"
+      @change="handleTableChange"
+    >
       <template #tags="{ text: tags }">
         <span>
-          <a-tag v-for="tag in tags"
-                 :key="tag"
-                 :color="
+          <a-tag
+            v-for="tag in tags"
+            :key="tag"
+            :color="
               tag === 'loser'
                 ? 'volcano'
                 : tag.length > 5
                 ? 'geekblue'
                 : 'green'
-            ">
+            "
+          >
             {{ tag.toUpperCase() }}
           </a-tag>
         </span>
@@ -60,7 +72,7 @@
       <template #enables="{}">
         <a-switch v-model:checked="checked" />
       </template>
-      <template #action="{record}">
+      <template #action="{ record }">
         <span>
           <a @click="query(record.key)">详情</a>
           <a-divider type="vertical" />
@@ -71,33 +83,53 @@
         </span>
       </template>
     </a-table>
-    <ModalUser v-model:show="dataProp.visible"
-               v-model:rowId="dataProp.rowId"
-               v-model:title="dataProp.title" />
+    <ModalUser
+      v-model:show="dataProp.visible"
+      v-model:rowId="dataProp.rowId"
+      v-model:title="dataProp.title"
+    />
   </div>
 </template>
 <script>
-import { computed, defineComponent, reactive, ref, toRefs } from "vue";
+import {
+  computed,
+  defineComponent,
+  //onMounted,
+  reactive,
+  ref,
+  toRefs,
+} from "vue";
 
 import { SmileOutlined, DownOutlined } from "@ant-design/icons-vue";
 
 import ModalUser from "@/components/Modal/User.vue";
 
+import { List } from "@/api/user";
+import { usePagination } from "vue-request";
+
 const columns = [
   {
-    title: "Name",
+    title: "用户名",
+    dataIndex: "userName",
+  },
+  {
+    title: "名称",
     dataIndex: "name",
   },
   {
-    title: "Age",
-    dataIndex: "age",
+    title: "邮箱",
+    dataIndex: "email",
   },
   {
-    title: "Address",
-    dataIndex: "address",
+    title: "手机号",
+    key: "phoneNumber",
+    dataIndex: "enables",
+    slots: {
+      customRender: "enables",
+    },
   },
   {
-    title: "Tags",
+    title: "角色标签",
     key: "tags",
     dataIndex: "tags",
     slots: {
@@ -105,52 +137,32 @@ const columns = [
     },
   },
   {
-    title: "Enable",
+    title: "启用状态",
     key: "enables",
     dataIndex: "enables",
     slots: {
       customRender: "enables",
     },
   },
+
   {
-    title: "Action",
+    title: "操作",
     key: "action",
     slots: {
       customRender: "action",
     },
   },
 ];
-const data = [];
-
-for (let i = 0; i < 46; i++) {
-  data.push({
-    key: i,
-    name: `Edward King ${i}`,
-    age: 32,
-    address: `London, Park Lane no. ${i}`,
-    tags: [`Teng`, `Ling`, `Feng`],
-    enables: false,
-  });
-}
 
 export default defineComponent({
   components: { ModalUser },
-  setup () {
+  setup() {
     const state = reactive({
       selectedRowKeys: [],
       // Check here to configure the default column
       loading: false,
     });
     const hasSelected = computed(() => state.selectedRowKeys.length > 0);
-
-    const start = () => {
-      state.loading = true; // ajax request after empty completing
-
-      setTimeout(() => {
-        state.loading = false;
-        state.selectedRowKeys = [];
-      }, 1000);
-    };
 
     const onSelectChange = (selectedRowKeys) => {
       console.log("selectedRowKeys changed: ", selectedRowKeys);
@@ -174,36 +186,71 @@ export default defineComponent({
       type: [],
       resource: "",
       desc: "",
-
     });
 
     const dataProp = reactive({
       visible: false,
       rowId: "",
-      title: "新增用户"
-    })
+      title: "新增用户",
+    });
 
     const edit = (value) => {
       dataProp.rowId = value;
       dataProp.title = "编辑用户";
       dataProp.visible = true;
-    }
+    };
 
     const query = (value) => {
-      console.log(value)
-    }
-
+      console.log(value);
+    };
 
     const remove = (value) => {
-      console.log(value)
-    }
+      console.log(value);
+    };
+
+    const queryData = (params) => {
+      return List(params).then((respone) => {
+        console.log(respone);
+        return respone.data;
+      });
+    };
+
+    const {
+      data: dataSource,
+      run,
+      loading,
+      current,
+      pageSize,
+    } = usePagination(queryData, {
+      formatResult: (res) => res.data,
+
+      pagination: {
+        currentKey: "SkipCount",
+        pageSizeKey: "MaxResultCount",
+      },
+    });
+    const pagination = computed(() => ({
+      total: 200,
+      current: current.value * pageSize.value - pageSize.value,
+      pageSize: pageSize.value,
+    }));
+    const handleTableChange = (pag, filters, sorter) => {
+      console.log("表格改变了");
+      console.log(pag);
+      run({
+        results: pag.pageSize,
+        page: pag?.current * pag.pageSize - pag.pageSize,
+        // sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...filters,
+      });
+    };
 
     return {
-      data,
+      dataSource,
       columns,
       hasSelected,
       ...toRefs(state),
-      start,
       onSelectChange,
       SmileOutlined,
       DownOutlined,
@@ -213,7 +260,10 @@ export default defineComponent({
       dataProp,
       edit,
       query,
-      remove
+      remove,
+      loading,
+      pagination,
+      handleTableChange,
     };
   },
 });
