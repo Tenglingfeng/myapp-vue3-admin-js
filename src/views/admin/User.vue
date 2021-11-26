@@ -46,13 +46,13 @@
         onChange: onSelectChange,
       }"
       :columns="columns"
-      :data-source="dataSource"
+      :data-source="data.dataSource"
       class="mt_28"
       :pagination="pagination"
       :loading="loading"
       @change="handleTableChange"
     >
-      <template #tags="{ text: tags }">
+      <!-- <template #tags="{ text: tags }">
         <span>
           <a-tag
             v-for="tag in tags"
@@ -68,17 +68,18 @@
             {{ tag.toUpperCase() }}
           </a-tag>
         </span>
-      </template>
-      <template #enables="{}">
+      </template> -->
+      <!-- <template #enables="{}">
         <a-switch v-model:checked="checked" />
-      </template>
+      </template> -->
+
       <template #action="{ record }">
         <span>
-          <a @click="query(record.key)">详情</a>
+          <a @click="query(record.id)">详情</a>
           <a-divider type="vertical" />
-          <a @click="edit(record.key)">编辑</a>
+          <a @click="edit(record.id)">编辑</a>
           <a-divider type="vertical" />
-          <a @click="remove(record.key)">删除</a>
+          <a @click="remove(record.id)">删除</a>
           <a-divider type="vertical" />
         </span>
       </template>
@@ -94,7 +95,7 @@
 import {
   computed,
   defineComponent,
-  //onMounted,
+  onMounted,
   reactive,
   ref,
   toRefs,
@@ -105,54 +106,6 @@ import { SmileOutlined, DownOutlined } from "@ant-design/icons-vue";
 import ModalUser from "@/components/Modal/User.vue";
 
 import { List } from "@/api/user";
-import { usePagination } from "vue-request";
-
-const columns = [
-  {
-    title: "用户名",
-    dataIndex: "userName",
-  },
-  {
-    title: "名称",
-    dataIndex: "name",
-  },
-  {
-    title: "邮箱",
-    dataIndex: "email",
-  },
-  {
-    title: "手机号",
-    key: "phoneNumber",
-    dataIndex: "enables",
-    slots: {
-      customRender: "enables",
-    },
-  },
-  {
-    title: "角色标签",
-    key: "tags",
-    dataIndex: "tags",
-    slots: {
-      customRender: "tags",
-    },
-  },
-  {
-    title: "启用状态",
-    key: "enables",
-    dataIndex: "enables",
-    slots: {
-      customRender: "enables",
-    },
-  },
-
-  {
-    title: "操作",
-    key: "action",
-    slots: {
-      customRender: "action",
-    },
-  },
-];
 
 export default defineComponent({
   components: { ModalUser },
@@ -208,46 +161,65 @@ export default defineComponent({
       console.log(value);
     };
 
-    const queryData = (params) => {
-      return List(params).then((respone) => {
-        console.log(respone);
-        return respone.data;
-      });
-    };
-
-    const {
-      data: dataSource,
-      run,
-      loading,
-      current,
-      pageSize,
-    } = usePagination(queryData, {
-      formatResult: (res) => res.data,
-
-      pagination: {
-        currentKey: "SkipCount",
-        pageSizeKey: "MaxResultCount",
+    const columns = [
+      {
+        title: "用户名",
+        key: "userName",
+        dataIndex: "userName",
       },
+      {
+        title: "名称",
+        key: "name",
+        dataIndex: "name",
+      },
+      {
+        title: "邮箱",
+        key: "email",
+        dataIndex: "email",
+      },
+      {
+        title: "手机号",
+        key: "phoneNumber",
+        dataIndex: "phoneNumber",
+      },
+      {
+        title: "角色标签",
+        key: "id",
+        dataIndex: "id",
+        // slots: {
+        //   customRender: "tags",
+        // },
+      },
+      {
+        title: "创建时间",
+        key: "creationTime",
+        dataIndex: "creationTime",
+      },
+
+      {
+        title: "操作",
+        key: "action",
+        slots: {
+          customRender: "action",
+        },
+      },
+    ];
+
+    const data = reactive({
+      dataSource: [],
     });
-    const pagination = computed(() => ({
-      total: 200,
-      current: current.value * pageSize.value - pageSize.value,
-      pageSize: pageSize.value,
-    }));
-    const handleTableChange = (pag, filters, sorter) => {
-      console.log("表格改变了");
-      console.log(pag);
-      run({
-        results: pag.pageSize,
-        page: pag?.current * pag.pageSize - pag.pageSize,
-        // sortField: sorter.field,
-        sortOrder: sorter.order,
-        ...filters,
+
+    const queryData = () => {
+      List({ SkipCount: 0, MaxResultCount: 10 }).then((respone) => {
+        data.dataSource = respone.data.items;
       });
     };
+    onMounted(() => {
+      queryData();
+    });
 
     return {
-      dataSource,
+      data,
       columns,
       hasSelected,
       ...toRefs(state),
@@ -261,9 +233,6 @@ export default defineComponent({
       edit,
       query,
       remove,
-      loading,
-      pagination,
-      handleTableChange,
     };
   },
 });

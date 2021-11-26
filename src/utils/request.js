@@ -6,7 +6,7 @@ import { GetAccessToken } from "./cookies";
 // Set config defaults when creating the instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_API,
-  timeout: 5000,
+  timeout: 50000,
 });
 
 var token = GetAccessToken();
