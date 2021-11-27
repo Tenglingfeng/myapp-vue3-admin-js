@@ -41,6 +41,7 @@
       </a-row>
     </div>
     <a-table
+      :tableLayout="fixed"
       :row-selection="{
         selectedRowKeys: selectedRowKeys,
         onChange: onSelectChange,
@@ -48,8 +49,8 @@
       :columns="columns"
       :data-source="data.dataSource"
       class="mt_28"
-      :pagination="pagination"
-      :loading="loading"
+      :pagination="false"
+      :loading="data.loading"
       @change="handleTableChange"
     >
       <!-- <template #tags="{ text: tags }">
@@ -84,6 +85,18 @@
         </span>
       </template>
     </a-table>
+    <a-pagination
+      :scroll="{ y: 240 }"
+      v-model:current="data.current"
+      :total="data.total"
+      :pageSizeOptions="data.pageSizeOptions"
+      @change="onChange"
+      :page-size="data.MaxResultCount"
+      show-size-changer
+      @showSizeChange="onShowSizeChange"
+      class="ant-pagination ant-table-pagination ant-table-pagination-right"
+    />
+
     <ModalUser
       v-model:show="dataProp.visible"
       v-model:rowId="dataProp.rowId"
@@ -166,6 +179,7 @@ export default defineComponent({
         title: "用户名",
         key: "userName",
         dataIndex: "userName",
+        ellipsis: true,
       },
       {
         title: "名称",
@@ -176,16 +190,20 @@ export default defineComponent({
         title: "邮箱",
         key: "email",
         dataIndex: "email",
+        ellipsis: true,
       },
       {
         title: "手机号",
         key: "phoneNumber",
         dataIndex: "phoneNumber",
+        ellipsis: true,
       },
       {
         title: "角色标签",
         key: "id",
         dataIndex: "id",
+        ellipsis: true,
+
         // slots: {
         //   customRender: "tags",
         // },
@@ -194,6 +212,7 @@ export default defineComponent({
         title: "创建时间",
         key: "creationTime",
         dataIndex: "creationTime",
+        ellipsis: true,
       },
 
       {
@@ -207,15 +226,48 @@ export default defineComponent({
 
     const data = reactive({
       dataSource: [],
+      total: 0,
+      SkipCount: 0,
+      MaxResultCount: 10,
+      current: 1,
+      pageSizeOptions: ["10", "20", "30"],
+      loading: false,
     });
 
     const queryData = () => {
-      List({ SkipCount: 0, MaxResultCount: 10 }).then((respone) => {
-        data.dataSource = respone.data.items;
-      });
+      data.loading = true;
+      List({
+        SkipCount: data.SkipCount,
+        MaxResultCount: data.MaxResultCount,
+      })
+        .then((respone) => {
+          data.loading = false;
+          data.dataSource = respone.data.items;
+          data.total = respone.data.totalCount;
+        })
+        .catch(() => {
+          data.loading = false;
+        });
     };
-    onMounted(() => {
+
+    function onChange(page, pageSize) {
+      data.SkipCount = page * pageSize - pageSize;
+      data.MaxResultCount = pageSize;
+      GetList();
+    }
+
+    const onShowSizeChange = (page, pageSize) => {
+      data.SkipCount = page * pageSize - pageSize;
+      data.MaxResultCount = pageSize;
+      GetList();
+    };
+
+    function GetList() {
       queryData();
+    }
+
+    onMounted(() => {
+      GetList();
     });
 
     return {
@@ -233,6 +285,9 @@ export default defineComponent({
       edit,
       query,
       remove,
+      GetList,
+      onChange,
+      onShowSizeChange,
     };
   },
 });
