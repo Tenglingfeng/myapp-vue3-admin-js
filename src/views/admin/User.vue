@@ -10,10 +10,10 @@
             :wrapper-col="wrapperCol"
           >
             <a-form-item label="机构">
-              <a-input v-model:value="formState.resource" />
+              <a-input v-model:value="formState.organization" />
             </a-form-item>
             <a-form-item label="关键字">
-              <a-input v-model:value="formState.name" />
+              <a-input v-model:value="formState.filter" />
             </a-form-item>
             <a-form-item label="启用状态">
               <a-select
@@ -27,8 +27,8 @@
               </a-select>
             </a-form-item>
             <a-form-item class="ml_10 mr_10 form_btn">
-              <a-button type="primary">搜索</a-button>
-              <a-button type="primary">重置</a-button>
+              <a-button type="primary" @click="GetList()">搜索</a-button>
+              <a-button type="primary" @click="Reset()">重置</a-button>
               <a-button type="primary">导出</a-button>
             </a-form-item>
           </a-form>
@@ -144,15 +144,6 @@ export default defineComponent({
         span: 14,
       },
     });
-    const formState = reactive({
-      name: "",
-      region: undefined,
-      date1: undefined,
-      delivery: false,
-      type: [],
-      resource: "",
-      desc: "",
-    });
 
     const dataProp = reactive({
       visible: false,
@@ -224,6 +215,10 @@ export default defineComponent({
       },
     ];
 
+    const formState = reactive({
+      filter: "",
+    });
+
     const data = reactive({
       dataSource: [],
       total: 0,
@@ -234,12 +229,18 @@ export default defineComponent({
       loading: false,
     });
 
+    //重置
+    function Reset() {
+      (formState.filter = ""), GetList();
+    }
     const queryData = () => {
       data.loading = true;
-      List({
-        SkipCount: data.SkipCount,
+      let params = {
+        SkipCount: data.SkipCount < 0 ? 0 : data.SkipCount,
         MaxResultCount: data.MaxResultCount,
-      })
+        Filter: formState.filter,
+      };
+      List(params)
         .then((respone) => {
           data.loading = false;
           data.dataSource = respone.data.items;
@@ -288,6 +289,7 @@ export default defineComponent({
       GetList,
       onChange,
       onShowSizeChange,
+      Reset,
     };
   },
 });
