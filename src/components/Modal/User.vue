@@ -44,7 +44,7 @@
 import { ref, watch, reactive } from "vue";
 import md5 from "js-md5";
 
-import { Create } from "@/api/user";
+import { Create, Get } from "@/api/user";
 import { message } from "ant-design-vue";
 
 export default {
@@ -62,24 +62,53 @@ export default {
       default: "",
     },
   },
-  emits: ["update:show"],
-  // eslint-disable-next-line no-dupe-keys
-  emits: ["update:rowId"],
+  emits: ["update:show,rowId"],
+
   setup(props, context) {
+    let data = {
+      id: "",
+    };
+
     watch(
       () => {
         return props.show;
       },
       (newVaule) => {
         visible.value = newVaule;
-        console.log(props.rowId);
+      }
+    );
+    watch(
+      () => {
+        return props.rowId;
+      },
+      async (newVaule) => {
+        data.id = newVaule;
+        if (data.id) {
+          const res = await GetUser(data.id);
+          console.log("res", res);
+          let keys = res.keys;
+          console.log("keys", keys);
+          for (let key in formState) {
+            console.log(key);
+          }
+        }
       }
     );
 
+    const GetUser = (id) => {
+      return Get(id)
+        .then((response) => {
+          console.log(response.keys);
+          return response.data;
+        })
+        .catch(() => {});
+    };
+
     const close = () => {
-      console.log(formRef);
       formRef.value.resetFields();
+      console.log(formRef);
       context.emit("update:show", false);
+      context.emit("update:rowId", "");
       context.emit("update:title", "新增用户");
     };
 
@@ -166,6 +195,7 @@ export default {
       rules,
       formRef,
       confirmLoading,
+      data,
     };
   },
 };

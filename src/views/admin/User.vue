@@ -80,8 +80,15 @@
           <a-divider type="vertical" />
           <a @click="edit(record.id)">编辑</a>
           <a-divider type="vertical" />
-          <a @click="remove(record.id)">删除</a>
-          <a-divider type="vertical" />
+          <a-popconfirm
+            v-if="data.dataSource.length"
+            title="确定删除吗?"
+            ok-text="是"
+            cancel-text="否"
+            @confirm="onDelete(record.id)"
+          >
+            <a>删除</a>
+          </a-popconfirm>
         </span>
       </template>
     </a-table>
@@ -118,7 +125,8 @@ import { SmileOutlined, DownOutlined } from "@ant-design/icons-vue";
 
 import ModalUser from "@/components/Modal/User.vue";
 
-import { List } from "@/api/user";
+import { List, Delete, Get } from "@/api/user";
+import { message } from "ant-design-vue";
 
 export default defineComponent({
   components: { ModalUser },
@@ -158,11 +166,27 @@ export default defineComponent({
     };
 
     const query = (value) => {
-      console.log(value);
+      GetUser(value);
     };
 
-    const remove = (value) => {
-      console.log(value);
+    const GetUser = (id) => {
+      return Get(id)
+        .then((response) => {
+          return response.data;
+        })
+        .catch(() => {});
+    };
+
+    const onDelete = (key) => {
+      console.log(key);
+      Delete(key)
+        .then((response) => {
+          if (response?.data == true) {
+            message.success("删除成功");
+            GetList();
+          }
+        })
+        .catch(() => {});
     };
 
     const columns = [
@@ -285,11 +309,11 @@ export default defineComponent({
       dataProp,
       edit,
       query,
-      remove,
       GetList,
       onChange,
       onShowSizeChange,
       Reset,
+      onDelete,
     };
   },
 });
