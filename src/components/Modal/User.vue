@@ -14,8 +14,8 @@
       :rules="rules"
       ref="formRef"
     >
-      <a-form-item label="用户名" name="username">
-        <a-input v-model:value="formState.username" />
+      <a-form-item label="用户名" name="userName">
+        <a-input v-model:value="formState.userName" />
       </a-form-item>
 
       <a-form-item label="密码" name="password">
@@ -28,7 +28,7 @@
       <a-form-item label="手机号" name="phoneNumber">
         <a-input v-model:value="formState.phoneNumber" />
       </a-form-item>
-      <a-form-item label="头像">
+      <a-form-item label="头像" name="avatar">
         <a-input v-model:value="formState.avatar" />
       </a-form-item>
 
@@ -44,7 +44,7 @@
 import { ref, watch, reactive } from "vue";
 import md5 from "js-md5";
 
-import { Create, Get } from "@/api/user";
+import { Create, Get, Update } from "@/api/user";
 import { message } from "ant-design-vue";
 
 export default {
@@ -85,11 +85,12 @@ export default {
         data.id = newVaule;
         if (data.id) {
           const res = await GetUser(data.id);
-          console.log("res", res);
-          let keys = res.keys;
-          console.log("keys", keys);
+          let keys = Object.keys(res);
           for (let key in formState) {
-            console.log(key);
+            if (keys.includes(key)) {
+              formState[key] = res[key];
+              console.log(key, formState[key]);
+            }
           }
         }
       }
@@ -98,7 +99,6 @@ export default {
     const GetUser = (id) => {
       return Get(id)
         .then((response) => {
-          console.log(response.keys);
           return response.data;
         })
         .catch(() => {});
@@ -106,7 +106,7 @@ export default {
 
     const close = () => {
       formRef.value.resetFields();
-      console.log(formRef);
+      console.log(formRef.value);
       context.emit("update:show", false);
       context.emit("update:rowId", "");
       context.emit("update:title", "新增用户");
@@ -115,16 +115,18 @@ export default {
     const visible = ref(false);
 
     const formState = reactive({
-      username: "",
+      userName: "",
       password: "",
       name: "",
       phoneNumber: "",
       avatar: "",
       roleNames: [],
+      concurrencyStamp: "",
+      extraProperties: {},
     });
 
     const rules = {
-      username: [
+      userName: [
         {
           required: true,
           message: "用户名必填",
@@ -139,41 +141,66 @@ export default {
       ],
       password: [
         {
-          required: true,
-          message: "密码必填",
-          trigger: "blur",
-        },
-        {
-          min: 1,
-          max: 256,
-          message: "Length should be 1 to 16",
-          trigger: "blur",
+          validator: validatePass,
+          trigger: "change",
         },
       ],
+    };
+
+    let validatePass = async (_rule, value) => {
+      if (!value && data.id) {
+        return Promise.resolve();
+      } else if (!value && !data.id) {
+        return Promise.reject("Please input the password");
+      } else {
+        return Promise.resolve();
+      }
     };
 
     const formRef = ref();
     const confirmLoading = ref(false);
 
+    const CreateUser = (data) => {
+      Create(data)
+        .then(() => {
+          confirmLoading.value = false;
+          message.success("创建成功");
+          close();
+        })
+        .catch(() => {
+          confirmLoading.value = false;
+        });
+    };
+
+    const UpdateUser = (id, data) => {
+      Update(id, data)
+        .then(() => {
+          confirmLoading.value = false;
+          message.success("修改成功");
+          close();
+        })
+        .catch(() => {
+          confirmLoading.value = false;
+        });
+    };
+
     const handleOk = () => {
       //浅拷贝
-      const data = Object.assign({}, formState);
-      data.password = md5(data.password);
+      const form_data = Object.assign({}, formState);
+      if (form_data.password) {
+        form_data.password = md5(form_data.password);
+      }
       confirmLoading.value = true;
-
+      console.log(data.id);
+      console.log(form_data);
       formRef.value
         .validate()
         .then(() => {
-          Create(data)
-            .then((response) => {
-              console.log(response);
-              confirmLoading.value = false;
-              message.success("创建成功");
-              close();
-            })
-            .catch(() => {
-              confirmLoading.value = false;
-            });
+          if (!data.id) {
+            CreateUser(form_data);
+          } else {
+            UpdateUser(data.id, form_data);
+          }
         })
         .catch((error) => {
           confirmLoading.value = false;
